@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arbitrage Engine — System Flowchart</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f1117; color: #e2e8f0; line-height: 1.6; }
+  .container { max-width: 1400px; margin: 0 auto; padding: 2rem; }
+  h1 { font-size: 2rem; color: #60a5fa; margin-bottom: 0.5rem; }
+  h2 { font-size: 1.4rem; color: #93c5fd; margin: 2rem 0 1rem; border-bottom: 1px solid #1e293b; padding-bottom: 0.5rem; }
+  h3 { font-size: 1.1rem; color: #a78bfa; margin: 1.5rem 0 0.5rem; }
+  .subtitle { color: #94a3b8; margin-bottom: 2rem; }
+  .diagram { background: #1e293b; border-radius: 12px; padding: 1.5rem; margin: 1rem 0 2rem; overflow-x: auto; border: 1px solid #334155; }
+  .explanation { background: #1e293b; border-radius: 12px; padding: 1.5rem; margin: 1rem 0 2rem; border: 1px solid #334155; }
+  .explanation p { margin: 0.5rem 0; color: #cbd5e1; }
+  .explanation ul { margin: 0.5rem 0 0.5rem 1.5rem; color: #cbd5e1; }
+  .explanation li { margin: 0.3rem 0; }
+  .explanation strong { color: #60a5fa; }
+  .explanation code { background: #0f1117; padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.9em; color: #fbbf24; }
+  .badge { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.8em; font-weight: 600; margin: 0 0.2rem; }
+  .badge-green { background: #064e3b; color: #34d399; }
+  .badge-blue { background: #1e3a5f; color: #60a5fa; }
+  .badge-yellow { background: #422006; color: #fbbf24; }
+  .badge-red { background: #450a0a; color: #f87171; }
+  .badge-purple { background: #3b1f6e; color: #a78bfa; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1rem 0; }
+  .card { background: #1e293b; border-radius: 12px; padding: 1.25rem; border: 1px solid #334155; }
+  .card h4 { color: #60a5fa; margin-bottom: 0.5rem; }
+  .card p { color: #94a3b8; font-size: 0.9rem; }
+  .metric { font-size: 1.5rem; font-weight: 700; color: #34d399; }
+  .flow-steps { counter-reset: step; }
+  .flow-step { counter-increment: step; position: relative; padding: 1rem 1rem 1rem 3rem; margin: 0.5rem 0; background: #0f1117; border-radius: 8px; border-left: 3px solid #3b82f6; }
+  .flow-step::before { content: counter(step); position: absolute; left: 0.75rem; top: 1rem; width: 1.5rem; height: 1.5rem; background: #3b82f6; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; }
+  .flow-step h4 { color: #93c5fd; margin-bottom: 0.25rem; }
+  .flow-step p { color: #94a3b8; font-size: 0.9rem; }
+  .decision-tree { background: #0f1117; border-radius: 8px; padding: 1rem; margin: 0.5rem 0; }
+  .decision { padding: 0.5rem 1rem; margin: 0.25rem 0; border-radius: 6px; }
+  .decision-yes { background: #064e3b; border-left: 3px solid #34d399; }
+  .decision-no { background: #450a0a; border-left: 3px solid #f87171; }
+  .decision-maybe { background: #422006; border-left: 3px solid #fbbf24; }
+  @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>🔄 Arbitrage Engine — System Flowchart</h1>
+<p class="subtitle">End-to-end marketplace arbitrage automation: Mercari Japan → eBay Worldwide</p>
+
+<!-- ===== SECTION 1: HIGH-LEVEL ARCHITECTURE ===== -->
+<h2>1. High-Level System Architecture</h2>
+
+<div class="diagram">
+<pre class="mermaid">
+flowchart TB
+    subgraph SOURCE["📦 Source Platforms"]
+        MJ[Mercari JP<br/>Internal API]
+        YJ[Yahoo Auctions JP]
+        TB[Taobao]
+        AE[AliExpress]
+    end
+
+    subgraph ENGINE["⚙️ Arbitrage Engine"]
+        subgraph SCRAPE["Scraping Layer"]
+            S1[API First<br/>Direct HTTP]
+            S2[Crawl4AI<br/>+ Camoufox]
+            S3[CF Bypass<br/>Middleware]
+            S4[Scrapfly<br/>Paid Fallback]
+        end
+
+        subgraph INTEL["Intelligence Layer"]
+            PI[Product ID<br/>Brand/Model/Rarity]
+            PR[Pricing Engine<br/>Fees/Profit/ROI]
+            MR[Market Tracker<br/>Price History/Trends]
+        end
+
+        subgraph DECIDE["Decision Layer"]
+            CR[Composite Rank<br/>7-Axis Scoring]
+            CO[Capital Optimizer<br/>Portfolio Allocation]
+            FR[Filter & Rank<br/>Go/No-Go]
+        end
+
+        subgraph ACT["Action Layer"]
+            LP[eBay Publisher<br/>Sell API]
+            SY[Inventory Sync<br/>Polling Loop]
+            AL[Alerts<br/>Telegram/Discord]
+        end
+    end
+
+    subgraph TARGET["🎯 Target Platforms"]
+        EB[eBay US/Global]
+        EY[Etsy]
+        AM[Amazon]
+        PM[Poshmark]
+    end
+
+    subgraph DATA["💾 Data Layer"]
+        DB[(PostgreSQL<br/>Listings/Sales/Prices)]
+        RD[Redis<br/>Queue/Cache]
+        S3[S3/CloudFront<br/>Images]
+    end
+
+    MJ --> S1
+    YJ --> S1
+    TB --> S2
+    AE --> S2
+
+    S1 -->|"if blocked"| S2
+    S2 -->|"if CF blocked"| S3
+    S3 -->|"if all fail"| S4
+
+    S1 & S2 & S3 & S4 --> PI
+    PI --> PR
+    PR --> MR
+    MR --> CR
+    CR --> CO
+    CO --> FR
+
+    FR -->|"✅ List"| LP
+    LP --> EB
+    LP --> EY
+
+    LP -->|"Track"| SY
+    SY -->|"Auto-delist"| AL
+
+    PI & PR & CR --> DB
+    SY --> DB
+    MR --> RD
+    LP --> S3
+
+    style SOURCE fill:#1e293b,stroke:#3b82f6,color:#e2e8f0
+    style ENGINE fill:#0f1117,stroke:#60a5fa,color:#e2e8f0
+    style TARGET fill:#1e293b,stroke:#34d399,color:#e2e8f0
+    style DATA fill:#1e293b,stroke:#a78bfa,color:#e2e8f0
+</pre>
+</div>
+
+<div class="explanation">
+<p><strong>How it works:</strong> The system has 4 layers that transform raw marketplace data into profitable listings:</p>
+<ul>
+  <li><strong>Scraping Layer:</strong> Multi-strategy scraping tries the fastest approach first (direct API), then falls back through increasingly powerful (but slower/expensive) methods. Most items are scraped via API in &lt;1 second.</li>
+  <li><strong>Intelligence Layer:</strong> Every scraped item is identified (brand, model, rarity), priced (market data + fee analysis), and tracked (price history, trends).</li>
+  <li><strong>Decision Layer:</strong> Items are scored on 7 axes (profit, velocity, risk, capital efficiency, rarity, competition, data quality), then filtered through portfolio constraints (max 35% in one category, max active listings, max capital).</li>
+  <li><strong>Action Layer:</strong> Approved items are listed on eBay with LLM-enriched descriptions, then continuously monitored for stockout. If the source item sells, the eBay listing is auto-delisted within 5-15 minutes.</li>
+</ul>
+</div>
+
+<!-- ===== SECTION 2: SCRAPING STRATEGY ===== -->
+<h2>2. Multi-Strategy Scraping Decision Tree</h2>
+
+<div class="diagram">
+<pre class="mermaid"
+>
+flowchart TD
+    START([Start Scrape]) --> A{Internal<br/>API Available?}
+
+    A -->|"Yes"| B[Call API Directly<br/>~500ms per request]
+    B --> C{API Returns<br/>Valid Data?}
+    C -->|"Yes"| D[Parse & Normalize<br/>→ ScrapedItem]
+    C -->|"No / Blocked"| E[Mark API Blocked<br/>Switch to Browser]
+
+    A -->|"No"| E
+
+    E --> F{Use Camoufox<br/>Stealth Browser?}
+    F -->|"Yes"| G[Crawl4AI + Camoufox<br/>Firefox anti-detect]
+    F -->|"No"| H[Crawl4AI + Chromium<br/>Standard stealth]
+
+    G --> I{Page Loads<br/>Successfully?}
+    H --> I
+
+    I -->|"Yes"| J{LLM Extraction<br/>Succeeds?}
+    J -->|"Yes"| K[LLM Structured Data<br/>→ ScrapedItem]
+    J -->|"No"| L[CSS/XPath Selectors<br/>Fallback extraction]
+    L --> D
+
+    I -->|"Cloudflare Block"| M[Route through<br/>CF Bypass Server]
+    M --> N{CF Challenge<br/>Solved?}
+    N -->|"Yes"| O[Get HTML<br/>Parse normally]
+    O --> D
+    N -->|"No"| P[Scrapfly API<br/>Paid fallback]
+    P --> D
+
+    D --> END([Return ScrapedItem])
+    K --> END
+
+    style START fill:#064e3b,stroke:#34d399
+    style END fill:#064e3b,stroke:#34d399
+    style M fill:#422006,stroke:#fbbf24
+    style P fill:#450a0a,stroke:#f87171
+</pre>
+</div>
+
+<div class="explanation">
+<p><strong>Why multiple strategies?</strong> Different sites have different anti-bot protections. The system adapts:</p>
+<ul>
+  <li><span class="badge badge-green">Strategy 1: Internal API</span> <strong>Mercari JP, Yahoo JP</strong> — These platforms have internal REST APIs used by their own apps. We call them directly. No browser needed. ~500ms per request. This is how we scrape 90%+ of items.</li>
+  <li><span class="badge badge-blue">Strategy 2: Crawl4AI + Camoufox</span> <strong>When API is blocked</strong> — Camoufox is a Firefox browser modified at the source code level to avoid bot detection. Combined with Crawl4AI's LLM extraction, it can handle any JS-rendered page.</li>
+  <li><span class="badge badge-yellow">Strategy 3: Cloudflare Bypass</span> <strong>CF-protected sites (Etsy, some others)</strong> — A Docker service that solves Cloudflare challenges using a real browser, caches clearance cookies for hours, and provides a simple HTTP API.</li>
+  <li><span class="badge badge-red">Strategy 4: Scrapfly</span> <strong>Last resort</strong> — Paid API with 98%+ bypass rate across all anti-bot vendors. Costs ~$0.002/request. Used only when everything else fails.</li>
+</ul>
+</div>
+
+<!-- ===== SECTION 3: PRODUCT IDENTIFICATION ===== -->
+<h2>3. Product Identification & Classification</h2>
+
+<div class="diagram">
+<pre class="mermaid"
+>
+flowchart LR
+    INPUT[Raw Listing<br/>Title + Description] --> BRAND
+
+    subgraph ID["Product Identification"]
+        BRAND[Brand Detection<br/>200+ known brands] --> MODEL
+        MODEL[Model/MPN<br/>Extraction] --> CAT
+        CAT[Category<br/>Classification] --> ATTR
+        ATTR[Attribute<br/>Extraction<br/>Color/Edition/Condition] --> RARITY
+        RARITY[Rarity Scoring<br/>Limited/Vintage/Discontinued] --> TAGS
+        TAGS[Tag Generation<br/>Searchable keywords]
+    end
+
+    TAGS --> OUTPUT[ProductIdentity<br/>Normalized product data]
+
+    style INPUT fill:#1e3a5f,stroke:#60a5fa
+    style OUTPUT fill:#064e3b,stroke:#34d399
+</pre>
+</div>
+
+<div class="explanation">
+<p><strong>Why product ID matters:</strong> To price an item correctly, we need to know exactly what it is. A "camera" could be a $50 point-and-shoot or a $2000 Leica. The identifier extracts:</p>
+<ul>
+  <li><strong>Brand:</strong> Matched against 200+ known brands across 6 categories. Multi-word brands matched first (e.g., "Comme des Garçons" before "Garçons").</li>
+  <li><strong>Model/MPN:</strong> Regex patterns extract manufacturer part numbers, model codes, UPC/EAN barcodes. "DMC-GH5" → Panasonic GH5. "α7 IV" → Sony A7 IV.</li>
+  <li><strong>Category:</strong> Keyword-based classification into 10 categories. Source category (Mercari's hierarchy) adds bonus weight.</li>
+  <li><strong>Rarity:</strong> Detects "limited edition", "first press", "discontinued", "vintage" signals. A rare item gets a +30% pricing premium.</li>
+  <li><strong>Condition:</strong> Normalizes Japanese/English terms: 新品 → new, 美品 → like_new, 中古 → good.</li>
+</ul>
+</div>
+
+<!-- ===== SECTION 4: PRICING ENGINE ===== -->
+<h2>4. Pricing Engine — Profit Optimization</h2>
+
+<div class="diagram">
+<pre class="mermaid"
+>
+flowchart TB
+    INPUT[ScrapedItem + MarketData] --> FEES
+
+    subgraph PRICING["Pricing Engine"]
+        FEES[Calculate All Fees<br/>Source + Proxy + Shipping + Target] --> PROFIT
+        PROFIT[Gross Profit<br/>Sale Price - Source Cost] --> NET
+        NET[Net Profit<br/>Gross - All Fees] --> ROI
+        ROI[ROI % / Margin %] --> EFFICIENCY
+        EFFICIENCY[Capital Efficiency<br/>Profit per Day per Dollar] --> RISK
+        RISK[Risk Adjustment<br/>Stockout prob / Volatility] --> PRICE
+        PRICE[Dynamic Pricing<br/>Optimal listing price]
+    end
+
+    PRICE --> OUTPUT[ProfitAnalysis<br/>Complete breakdown]
+
+    style INPUT fill:#1e3a5f,stroke:#60a5fa
+    style OUTPUT fill:#064e3b,stroke:#34d399
+</pre>
+</div>
+
+<div class="explanation">
+<p><strong>The pricing engine doesn't just compute margin — it optimizes for capital efficiency.</strong> Here's the full fee stack:</p>
+
+<div class="grid">
+  <div class="card">
+    <h4>Source Costs (Mercari JP)</h4>
+    <p>• Item price (converted JPY→USD)<br/>• Mercari selling fee: 10%<br/>• Payment processing: 3%</p>
+  </div>
+  <div class="card">
+    <h4>Proxy Service (Buyee/ZenMarket)</h4>
+    <p>• Receiving fee: ¥200-400<br/>• Consolidation: ¥500<br/>• Payment fee: 3%</p>
+  </div>
+  <div class="card">
+    <h4>Shipping (Japan → US)</h4>
+    <p>• ePacket (0.5kg): $15<br/>• EMS (0.5kg): $22<br/>• DHL Express (0.5kg): $38<br/>• Insurance: 2% of value</p>
+  </div>
+  <div class="card">
+    <h4>Target Fees (eBay)</h4>
+    <p>• Final value fee: 12-15% (by category)<br/>• Payment processing: 2.9% + $0.30<br/>• Promoted listing: 2%+ (optional)</p>
+  </div>
+</div>
+
+<p style="margin-top: 1rem;"><strong>Dynamic pricing strategy:</strong></p>
+<ul>
+  <li>Base price = 75th percentile of eBay sold listings (competitive but profitable)</li>
+  <li>Condition adjustment: New +15%, Good +0%, Fair -15%, Poor -30%</li>
+  <li>Rarity premium: Limited/vintage items +30%</li>
+  <li>Competition positioning: If price is below the "competition zone", position 20% above it</li>
+  <li>Psychological pricing: $49.99, $199.99, $599.99</li>
+</ul>
+
+<p><strong>Key metric: Profit per day</strong> — A $30 profit item that sells in 3 days ($10/day) beats a $200 profit item that takes 30 days ($6.67/day). Capital turnover is everything.</p>
+</div>
+
+<!-- ===== SECTION 5: COMPOSITE SCORING ===== -->
+<h2>5. Composite Scoring & Filtering</h2>
+
+<div class="diagram">
+<pre class="mermaid"
+>
+flowchart LR
+    PROFIT[ProfitAnalysis] --> SCORE
+
+    subgraph SCORING["7-Axis Composite Scoring"]
+        S1[Profit Score<br/>0-100]
+        S2[Velocity Score<br/>0-100]
+        S3[Risk Score<br/>0-100]
+        S4[Capital Efficiency<br/>0-100]
+        S5[Rarity Score<br/>0-100]
+        S6[Competition Score<br/>0-100]
+        S7[Data Quality<br/>0-100]
+    end
+
+    SCORE --> WEIGHTS
+
+    subgraph WEIGHTS["Category-Specific Weights"]
+        W1[Trading Cards:<br/>Velocity 30%]
+        W2[Vintage Cameras:<br/>Profit 35%]
+        W3[Streetwear:<br/>Capital Eff. 25%]
+        W4[Anime Figures:<br/>Balanced]
+    end
+
+    WEIGHTS --> COMPOSITE[Composite Score<br/>Weighted Average]
+
+    COMPOSITE --> FILTER{Score ≥ Threshold?}
+
+    FILTER -->|"Yes"| PORTFOLIO{Portfolio<br/>Constraints OK?}
+
+    PORTFOLIO -->|"Yes ✅"| LIST[Should List<br/>high/medium/low priority]
+    PORTFOLIO -->|"No ❌"| SKIP1[Skip<br/>Category at capacity]
+    FILTER -->|"No ❌"| SKIP2[Skip<br/>Below threshold]
+
+    style LIST fill:#064e3b,stroke:#34d399
+    style SKIP1 fill:#450a0a,stroke:#f87171
+    style SKIP2 fill:#450a0a,stroke:#f87171
+</pre>
+</div>
+
+<div class="explanation">
+<p><strong>Why 7 axes?</strong> Profit alone is misleading. A $200 profit item that takes 60 days to sell, has 20% stockout risk, and ties up $150 capital is worse than a $40 profit item that sells in 3 days with 2% risk on $30 capital.</p>
+
+<div class="grid">
+  <div class="card">
+    <h4>📊 Profit Score (25-35%)</h4>
+    <p>Absolute profit ($) + margin (%). $25+ profit with 30%+ margin = high score. Weighted higher for vintage cameras (patient buyers).</p>
+  </div>
+  <div class="card">
+    <h4>⚡ Velocity Score (10-30%)</h4>
+    <p>How fast it sells. 3 days = 100pts, 7 days = 85pts, 30 days = 25pts. Weighted highest for trading cards (fast turnover critical).</p>
+  </div>
+  <div class="card">
+    <h4>🛡️ Risk Score (10-20%)</h4>
+    <p>Stockout probability, price volatility, counterfeit risk, data confidence. Lower risk = higher score.</p>
+  </div>
+  <div class="card">
+    <h4>💰 Capital Efficiency (15-25%)</h4>
+    <p>Profit per day per dollar deployed. $0.50+/day/$ = excellent. Weighted highest for streetwear (trends change fast).</p>
+  </div>
+</div>
+
+<p style="margin-top: 1rem;"><strong>Portfolio constraints prevent over-concentration:</strong></p>
+<ul>
+  <li>Max 35% of capital in any single category</li>
+  <li>Max active listings limit (default 100)</li>
+  <li>Max capital deployed limit (default $5,000)</li>
+  <li>Category capacity: if we have 10+ active listings in one category, new candidates are deprioritized</li>
+</ul>
+</div>
+
+<!-- ===== SECTION 6: CAPITAL ALLOCATION ===== -->
+<h2>6. Capital Allocation Optimizer</h2>
+
+<div class="diagram">
+<pre class="mermaid"
+>
+flowchart TB
+    CAPITAL[Total Capital<br/>e.g. $2000] --> RESERVE
+
+    RESERVE[Reserve 15%<br/>$300 held back] --> DEPLOY[Deployable<br/>$1700]
+
+    subgraph ALLOC["Efficiency-Weighted Allocation"]
+        EFF[Calculate Efficiency<br/>Margin × Sell-Through / Days] --> WEIGHT
+        WEIGHT[Weight by<br/>Relative Efficiency] --> DIST
+        DIST[Distribute Capital<br/>Across Categories] --> CONSTRAIN
+        CONSTRAIN[Apply Constraints<br/>Max 35% per category<br/>Min $100 per category]
+    end
+
+    DEPLOY --> ALLOC
+
+    CONSTRAIN --> PLAN[Portfolio Plan<br/>Category allocations]
+
+    PLAN --> ACTIONS[Rebalance Actions<br/>Increase/Decrease/Exit]
+
+    style CAPITAL fill:#1e3a5f,stroke:#60a5fa
+    style PLAN fill:#064e3b,stroke:#34d399
+</pre>
+</div>
+
+<div class="explanation">
+<p><strong>The capital optimizer treats this as a portfolio problem.</strong> Given fixed capital, how do we allocate across categories to maximize total daily profit?</p>
+
+<div class="grid">
+  <div class="card">
+    <h4>Example: $2,000 Capital</h4>
+    <p style="margin-top: 0.5rem;"><strong>Trading Cards:</strong> 35 listings × $25 = $875<br/>→ 50% margin, 3 days, 85% sell-through<br/>→ <span class="metric">$1,275/mo</span></p>
+    <p style="margin-top: 0.5rem;"><strong>Anime Figures:</strong> 10 listings × $50 = $500<br/>→ 35% margin, 7 days, 75% sell-through<br/>→ <span class="metric">$450/mo</span></p>
+    <p style="margin-top: 0.5rem;"><strong>Vintage Cameras:</strong> 3 listings × $120 = $360<br/>→ 30% margin, 14 days, 60% sell-through<br/>→ <span class="metric">$135/mo</span></p>
+  </div>
+  <div class="card">
+    <h4>Key Insight</h4>
+    <p style="margin-top: 0.5rem;">Trading cards generate the most profit per dollar because of high velocity (3-day turnover) and high sell-through (85%). Even though per-item profit is low ($12.50), the capital rotates 10x per month.</p>
+    <p style="margin-top: 0.5rem;">Vintage cameras have high per-item profit ($36) but slow turnover (14 days) and lower sell-through (60%). Capital is tied up longer.</p>
+    <p style="margin-top: 0.5rem;"><strong>The optimizer automatically shifts capital toward the most efficient categories based on real performance data.</strong></p>
+  </div>
+</div>
+</div>
+
+<!-- ===== SECTION 7: FULL PIPELINE FLOW ===== -->
+<h2>7. Complete Pipeline — Step by Step</h2>
+
+<div class="flow-steps">
+  <div class="flow-step">
+    <h4>Step 1: Discovery Scan</h4>
+    <p>Search Mercari JP for a category (e.g., "anime figure rare"). The multi-strategy scraper tries the internal API first (~500ms/page), falls back to Crawl4AI+Camoufox if blocked. Returns 20-50 candidate items per scan.</p>
+  </div>
+  <div class="flow-step">
+    <h4>Step 2: Product Identification</h4>
+    <p>Each item is analyzed: brand extracted from 200+ known brands, model/MPN extracted via regex, category classified via keyword matching, rarity scored (limited/vintage/discontinued signals), condition normalized (Japanese→English).</p>
+  </div>
+  <div class="flow-step">
+    <h4>Step 3: Market Price Lookup</h4>
+    <p>For each item, search eBay sold listings via the Finding API (free). Collect 30-50 sold prices. Compute median, percentiles, trend (rising/falling/stable). This gives us the market value.</p>
+  </div>
+  <div class="flow-step">
+    <h4>Step 4: Profit Analysis</h4>
+    <p>Full fee calculation: source fees (Mercari 10% + 3%), proxy fees (Buyee ¥700), shipping (ePacket/EMS/DHL by weight), eBay fees (12-15% + 2.9% + $0.30), insurance, LLM costs. Net profit = sale price - source cost - all fees.</p>
+  </div>
+  <div class="flow-step">
+    <h4>Step 5: Dynamic Pricing</h4>
+    <p>Optimal listing price = 75th percentile of sold prices, adjusted for condition, rarity, competition position, and psychological pricing. Target: price that sells within the category's average days-to-sell.</p>
+  </div>
+  <div class="flow-step">
+    <h4>Step 6: Composite Scoring</h4>
+    <p>Score each item on 7 axes (profit, velocity, risk, capital efficiency, rarity, competition, data quality). Weights vary by category. Items below threshold are rejected with specific reasons.</p>
+  </div>
+  <div class="flow-step">
+    <h4>Step 7: Portfolio Filtering</h4>
+    <p>Apply portfolio constraints: max 35% in one category, max active listings, max capital. Items that would over-concentrate the portfolio are deprioritized. Remaining items are ranked by composite score.</p>
+  </div>
+  <div class="flow-step">
+    <h4>Step 8: Capital Allocation</h4>
+    <p>The capital optimizer generates an optimal allocation plan across categories. Rebalance actions tell us which categories to increase/decrease. This feeds back into Step 7's constraints.</p>
+  </div>
+  <div class="flow-step">
+    <h4>Step 9: Listing</h4>
+    <p>Top-ranked items are enriched by the LLM (Japanese→English translation, compelling description, legal caveats, item specifics). Images are processed (resized, watermarked removed). Listed on eBay via the Sell API at the optimal price.</p>
+  </div>
+  <div class="flow-step">
+    <h4>Step 10: Inventory Sync</h4>
+    <p>A polling loop checks every active source listing every 5-15 minutes. If the source item shows "sold", the eBay listing is immediately ended via the API. Telegram alerts notify you of delists. Target: &lt;3% failure rate.</p>
+  </div>
+  <div class="flow-step">
+    <h4>Step 11: Market Learning</h4>
+    <p>Every sale, every price check, every delist is recorded. The market tracker builds increasingly accurate price histories. The capital optimizer uses real performance data to improve allocation. The system gets smarter over time.</p>
+  </div>
+</div>
+
+<!-- ===== SECTION 8: DECISION LOGIC ===== -->
+<h2>8. Go/No-Go Decision Logic</h2>
+
+<div class="diagram">
+<pre class="mermaid"
+>
+flowchart TD
+    ITEM[Candidate Item] --> P{profit ≥ $15?}
+    P -->|"No"| REJECT1[❌ SKIP<br/>Profit too low]
+    P -->|"Yes"| M{margin ≥ 20%?}
+    M -->|"No"| REJECT2[❌ SKIP<br/>Margin too low]
+    M -->|"Yes"| R{ROI ≥ 30%?}
+    R -->|"No"| REJECT3[❌ SKIP<br/>ROI too low]
+    R -->|"Yes"| D{days_to_sell ≤ 30?}
+    D -->|"No"| REJECT4[❌ SKIP<br/>Too slow]
+    D -->|"Yes"| S{stockout_risk ≤ 15%?}
+    S -->|"No"| WARN1[⚠️ WARN<br/>High stockout risk]
+    S -->|"Yes"| Q{data_quality ≥ 20?}
+    Q -->|"No"| WARN2[⚠️ WARN<br/>Low data confidence]
+    Q -->|"Yes"| C{composite_score ≥ 40?}
+    C -->|"No"| REJECT5[❌ SKIP<br/>Score too low]
+    C -->|"Yes"| PORT{portfolio<br/>constraints OK?}
+    PORT -->|"No"| HOLD[⏸️ HOLD<br/>Category at capacity]
+    PORT -->|"Yes"| SCORE{composite<br/>score?}
+
+    SCORE -->"|≥ 75"| STRONG[🟢 STRONG BUY<br/>List immediately]
+    SCORE -->"|55-74"| BUY[🟡 BUY<br/>List when ready]
+    SCORE -->"|40-54"| WEAK[🟠 HOLD<br/>Marginal — review manually]
+
+    WARN1 --> C
+    WARN2 --> C
+
+    style REJECT1 fill:#450a0a,stroke:#f87171,color:#fca5a5
+    style REJECT2 fill:#450a0a,stroke:#f87171,color:#fca5a5
+    style REJECT3 fill:#450a0a,stroke:#f87171,color:#fca5a5
+    style REJECT4 fill:#450a0a,stroke:#f87171,color:#fca5a5
+    style REJECT5 fill:#450a0a,stroke:#f87171,color:#fca5a5
+    style WARN1 fill:#422006,stroke:#fbbf24,color:#fde68a
+    style WARN2 fill:#422006,stroke:#fbbf24,color:#fde68a
+    style HOLD fill:#422006,stroke:#fbbf24,color:#fde68a
+    style STRONG fill:#064e3b,stroke:#34d399,color:#6ee7b7
+    style BUY fill:#064e3b,stroke:#34d399,color:#6ee7b7
+    style WEAK fill:#422006,stroke:#fbbf24,color:#fde68a
+</pre>
+</div>
+
+<div class="explanation">
+<p><strong>The decision tree has 3 outcomes:</strong></p>
+<ul>
+  <li><span class="badge badge-green">🟢 STRONG BUY (score ≥ 75):</span> List immediately. High profit, fast turnover, low risk. These are the gems — rare items in high-demand categories with strong margins.</li>
+  <li><span class="badge badge-green">🟡 BUY (score 55-74):</span> List when ready. Solid items that meet all thresholds but aren't exceptional. The bulk of your listings will be here.</li>
+  <li><span class="badge badge-yellow">🟠 HOLD (score 40-54):</span> Marginal — review manually. Might be worth listing if you have spare capacity, but not auto-approved.</li>
+  <li><span class="badge badge-red">❌ SKIP (score &lt; 40 or hard fail):</span> Don't list. Reasons are specific: "Net profit $8 < $15 minimum", "Days to sell 45 > 30 max", "Stockout risk 22% > 15% max".</li>
+</ul>
+</div>
+
+<!-- ===== SECTION 9: DATA FLOW ===== -->
+<h2>9. Data Flow Summary</h2>
+
+<div class="diagram">
+<pre class="mermaid"
+>
+sequenceDiagram
+    participant Mercari as Mercari JP
+    participant Scraper as Scraping Engine
+    participant ID as Product ID
+    participant Pricing as Pricing Engine
+    participant eBay as eBay Finding API
+    participant Rank as Filter & Rank
+    participant Publisher as eBay Publisher
+    participant DB as Database
+    participant Sync as Inventory Sync
+    participant Telegram as Telegram
+
+    Scraper->>Mercari: Search API / Browser
+    Mercari-->>Scraper: Raw listings (JSON/HTML)
+    Scraper->>ID: ScrapedItem
+    ID->>ID: Brand/Model/Category/Rarity
+    ID->>Pricing: ProductIdentity
+    Pricing->>eBay: Search sold listings
+    eBay-->>Pricing: Sold prices (30-50 results)
+    Pricing->>Pricing: Fee calc + Profit analysis
+    Pricing->>Rank: ProfitAnalysis
+    Rank->>Rank: 7-axis scoring
+    Rank->>Rank: Portfolio filtering
+    Rank->>DB: Save ranked candidates
+    Rank->>Publisher: Top N candidates
+    Publisher->>eBay: Create listing (Sell API)
+    eBay-->>Publisher: Listing URL
+    Publisher->>DB: Save target listing
+    Sync->>Mercari: Poll source (every 5-15 min)
+    alt Item sold on source
+        Sync->>eBay: End listing (API)
+        Sync->>Telegram: ⚠️ Auto-delisted alert
+    end
+    Sync->>DB: Update status
+</pre>
+</div>
+
+<!-- ===== SECTION 10: KEY METRICS ===== -->
+<h2>10. Key Metrics & Targets</h2>
+
+<div class="grid">
+  <div class="card">
+    <h4>🎯 Profit Targets</h4>
+    <p>Min net profit: <strong>$15/item</strong></p>
+    <p>Min net margin: <strong>20%</strong></p>
+    <p>Min ROI: <strong>30%</strong></p>
+    <p>Target profit/day: <strong>$50-100/day</strong></p>
+  </div>
+  <div class="card">
+    <h4>⚡ Velocity Targets</h4>
+    <p>Max days to sell: <strong>30 days</strong></p>
+    <p>Target days to sell: <strong>7-14 days</strong></p>
+    <p>Capital turns/month: <strong>2-4x</strong></p>
+    <p>Active listings: <strong>50-100</strong></p>
+  </div>
+  <div class="card">
+    <h4>🛡️ Risk Targets</h4>
+    <p>Max stockout rate: <strong>3%</strong></p>
+    <p>Max single category: <strong>35%</strong></p>
+    <p>Min categories active: <strong>5</strong></p>
+    <p>Capital reserve: <strong>15%</strong></p>
+  </div>
+  <div class="card">
+    <h4>📊 Scale Targets</h4>
+    <p>Monthly revenue: <strong>$5,000-15,000</strong></p>
+    <p>Monthly profit: <strong>$1,500-5,000</strong></p>
+    <p>Capital efficiency: <strong>2-5%/day</strong></p>
+    <p>Annualized ROI: <strong>200-500%</strong></p>
+  </div>
+</div>
+
+<div style="text-align: center; margin-top: 3rem; padding: 1.5rem; background: #1e293b; border-radius: 12px;">
+  <p style="color: #94a3b8; font-size: 0.9rem;">
+    Arbitrage Engine v0.1.0 — Built with Python, Crawl4AI, Camoufox, Streamlit<br/>
+    Source: <code>github.com/arbitrage-engine</code>
+  </p>
+</div>
+
+</div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    flowchart: { curve: 'basis', padding: 20 },
+    themeVariables: {
+      primaryColor: '#3b82f6',
+      primaryTextColor: '#e2e8f0',
+      primaryBorderColor: '#60a5fa',
+      lineColor: '#64748b',
+      secondaryColor: '#1e293b',
+      tertiaryColor: '#0f1117',
+      background: '#0f1117',
+      mainBkg: '#1e293b',
+      nodeBorder: '#334155',
+      clusterBkg: '#0f1117',
+      titleColor: '#e2e8f0',
+      edgeLabelBackground: '#1e293b',
+    }
+  });
+</script>
+</body>
+</html>
